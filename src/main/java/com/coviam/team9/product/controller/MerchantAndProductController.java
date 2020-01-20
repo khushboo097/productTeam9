@@ -38,13 +38,18 @@ public class MerchantAndProductController {
         MerchantAndProduct merchantAndProduct = new MerchantAndProduct();
         BeanUtils.copyProperties(merchantAndProductDTO, merchantAndProduct);
         merchantAndProductService.save(merchantAndProduct);
-        return new ResponseEntity<MerchantAndProduct>(merchantAndProduct, HttpStatus.OK);
+        return new ResponseEntity<MerchantAndProduct>(merchantAndProduct, HttpStatus.CREATED);
     }
+
     @PutMapping(path = "/edit")
-    public ResponseEntity<MerchantAndProduct> editMerchantProductDetails(@Valid @RequestBody MerchantAndProduct merchantAndProduct) {
+    public ResponseEntity<MerchantAndProduct> editMerchantProductDetails(@Valid @RequestBody MerchantAndProductDTO merchantAndProductDTO) {
+
+        MerchantAndProduct merchantAndProduct = new MerchantAndProduct();
+        BeanUtils.copyProperties(merchantAndProductDTO, merchantAndProduct);
         merchantAndProductService.save(merchantAndProduct);
         return new ResponseEntity<MerchantAndProduct>(merchantAndProduct, HttpStatus.OK);
     }
+
     @PutMapping(path = "/decreaseQuantity")
     public ResponseEntity<Integer> decreaseMerchantProductQuantity(@Valid @RequestBody DecreaseMerchantProductQuantityDTO decreaseMerchantProductQuantityDTO) {
         return new ResponseEntity<Integer>(merchantAndProductService.changeQuantity(decreaseMerchantProductQuantityDTO), HttpStatus.OK);

@@ -59,6 +59,7 @@ public class merchantAndProductServiceImpl implements MerchantAndProductService 
 
         //phone rating
         //phone price h,l
+        List<AllProductsByCategoryNameDTO> returnAllProductsByCategoryNameDTO = new ArrayList<AllProductsByCategoryNameDTO>();
 
         for (AllProductsByCategoryNameDTO productsByCategoryNameDTO : byCategoryName) {
             productsByCategoryNameDTO.setProductId(productsByCategoryNameDTO.get_id());
@@ -67,13 +68,13 @@ public class merchantAndProductServiceImpl implements MerchantAndProductService 
             if (!CollectionUtils.isEmpty(all)) {
 
                 merchantAndProduct = all.get(0);
-                System.out.println(merchantAndProduct.toString());
                 productsByCategoryNameDTO.setMerchantAndProductId(merchantAndProduct.getMerchantAndProductId());
                 productsByCategoryNameDTO.setMerchantId(merchantAndProduct.getMerchantId());
                 productsByCategoryNameDTO.setSellingPrice(merchantAndProduct.getSellingPrice());
+                returnAllProductsByCategoryNameDTO.add(productsByCategoryNameDTO);
             }
         }
-        return byCategoryName;
+        return returnAllProductsByCategoryNameDTO;
     }
 
     @Override

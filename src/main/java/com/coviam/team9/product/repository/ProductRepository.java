@@ -13,4 +13,6 @@ public interface ProductRepository extends MongoRepository<Product, String> {
     List<Product> findByProductNameAndDescriptionAndCategoryName(String productName, String description, String categoryName);
 
     List<AllProductsByCategoryNameDTO> findByCategoryName(String categoryName);
+
+    List<AllProductsByCategoryNameDTO> findByCategoryNameOrderByProductRating(String categoryName);
 }

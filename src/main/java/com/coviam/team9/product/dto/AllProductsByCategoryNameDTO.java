@@ -12,7 +12,6 @@ import java.util.Map;
 public class AllProductsByCategoryNameDTO {
     private String _id;
     private String merchantAndProductId;
-
     private String productId;
     private String merchantId;
     private String productName;
