@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.lang.annotation.Documented;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
 
 @Getter
@@ -17,17 +18,16 @@ import java.util.Map;
 @Document
 public class MerchantAndProduct {
 
+
+
     @Id
-    private String _id;
-    private double price;
+    private String merchantAndProductId;
     private String merchantId;
     private String productId;
     private int quantity;
     private double sellingPrice;
-    private String url1;
-    private String url2;
-    private String url3;
     private int totalSellingQuantity;
     private double revenue;
+
 
 }

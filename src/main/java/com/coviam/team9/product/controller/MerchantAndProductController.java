@@ -1,12 +1,12 @@
 package com.coviam.team9.product.controller;
 
 import com.coviam.team9.product.document.MerchantAndProduct;
-import com.coviam.team9.product.dto.DecreaseMerchantProductQuantity;
-import com.coviam.team9.product.dto.MerchantAndProductDto;
+import com.coviam.team9.product.dto.AllProductsByCategoryNameDTO;
+import com.coviam.team9.product.dto.DecreaseMerchantProductQuantityDTO;
+import com.coviam.team9.product.dto.MerchantAndProductDTO;
+import com.coviam.team9.product.dto.ProductGetDTO;
 import com.coviam.team9.product.repository.MerchantAndProductRepository;
-import com.coviam.team9.product.service.DecreaseQuantityService;
 import com.coviam.team9.product.service.MerchantAndProductService;
-import org.bson.types.ObjectId;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,33 +22,31 @@ public class MerchantAndProductController {
     @Autowired
     MerchantAndProductService merchantAndProductService;
 
-    @Autowired
-    DecreaseQuantityService decreaseQuantityService;
 
-    @Autowired
-    MerchantAndProductRepository merchantAndProductRepository;
+    @GetMapping(path = "/get/{categoryName}")
+    public ResponseEntity<List<AllProductsByCategoryNameDTO>> getAllProductsByCategoryName(@PathVariable String categoryName) {
+        return new ResponseEntity<List<AllProductsByCategoryNameDTO>>(merchantAndProductService.getProductsByCategoryNameAndMerchantRating(categoryName), HttpStatus.OK);
+    }
 
-    @GetMapping(path = "/get")
-    public ResponseEntity<List<MerchantAndProduct>> getAll() {
-        return new ResponseEntity<List<MerchantAndProduct>>(merchantAndProductRepository.findAll(), HttpStatus.OK);
+    @GetMapping(path = "/get/{categoryName}/{productId}/{merchantAndProductId}")
+    public ResponseEntity<AllProductsByCategoryNameDTO> getProductDetails(@PathVariable String categoryName, @PathVariable String productId, @PathVariable String merchantAndProductId) {
+        return new ResponseEntity<AllProductsByCategoryNameDTO>(merchantAndProductService.getOneProduct(productId, merchantAndProductId), HttpStatus.OK);
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<MerchantAndProduct> addProductDetails(@Valid @RequestBody MerchantAndProductDto merchantAndProductDto) {
+    public ResponseEntity<MerchantAndProduct> addProductDetails(@Valid @RequestBody MerchantAndProductDTO merchantAndProductDTO) {
         MerchantAndProduct merchantAndProduct = new MerchantAndProduct();
-        BeanUtils.copyProperties(merchantAndProductDto, merchantAndProduct);
+        BeanUtils.copyProperties(merchantAndProductDTO, merchantAndProduct);
         merchantAndProductService.save(merchantAndProduct);
         return new ResponseEntity<MerchantAndProduct>(merchantAndProduct, HttpStatus.OK);
     }
-
     @PutMapping(path = "/edit")
     public ResponseEntity<MerchantAndProduct> editMerchantProductDetails(@Valid @RequestBody MerchantAndProduct merchantAndProduct) {
         merchantAndProductService.save(merchantAndProduct);
         return new ResponseEntity<MerchantAndProduct>(merchantAndProduct, HttpStatus.OK);
     }
-
     @PutMapping(path = "/decreaseQuantity")
-    public ResponseEntity<Integer> decreaseMerchantProductQuantity(@Valid @RequestBody DecreaseMerchantProductQuantity decreaseMerchantProductQuantity) {
-        return new ResponseEntity<Integer>(decreaseQuantityService.changeQuantity(decreaseMerchantProductQuantity), HttpStatus.OK);
+    public ResponseEntity<Integer> decreaseMerchantProductQuantity(@Valid @RequestBody DecreaseMerchantProductQuantityDTO decreaseMerchantProductQuantityDTO) {
+        return new ResponseEntity<Integer>(merchantAndProductService.changeQuantity(decreaseMerchantProductQuantityDTO), HttpStatus.OK);
     }
 }
