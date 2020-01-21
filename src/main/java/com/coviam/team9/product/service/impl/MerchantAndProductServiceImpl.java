@@ -16,7 +16,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 
 @Service
-public class merchantAndProductServiceImpl implements MerchantAndProductService {
+public class MerchantAndProductServiceImpl implements MerchantAndProductService {
     @Autowired
     MerchantAndProductRepository merchantAndProductRepository;
 
@@ -66,7 +66,6 @@ public class merchantAndProductServiceImpl implements MerchantAndProductService 
             MerchantAndProduct merchantAndProduct = null;
             List<MerchantAndProduct> all = merchantAndProductRepository.findByProductIdOrderBySellingPrice(productsByCategoryNameDTO.getProductId());
             if (!CollectionUtils.isEmpty(all)) {
-
                 merchantAndProduct = all.get(0);
                 productsByCategoryNameDTO.setMerchantAndProductId(merchantAndProduct.getMerchantAndProductId());
                 productsByCategoryNameDTO.setMerchantId(merchantAndProduct.getMerchantId());

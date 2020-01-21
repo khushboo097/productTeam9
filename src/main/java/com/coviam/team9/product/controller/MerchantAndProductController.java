@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import javax.validation.Valid;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/merchantAndProduct")
 public class MerchantAndProductController {
     @Autowired
     MerchantAndProductService merchantAndProductService;
-
 
     @GetMapping(path = "/get/{categoryName}")
     public ResponseEntity<List<AllProductsByCategoryNameDTO>> getAllProductsByCategoryName(@PathVariable String categoryName) {
