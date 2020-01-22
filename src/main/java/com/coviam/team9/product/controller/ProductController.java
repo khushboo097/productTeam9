@@ -1,6 +1,7 @@
 package com.coviam.team9.product.controller;
 
 import com.coviam.team9.product.document.Product;
+import com.coviam.team9.product.dto.AddProductDTO;
 import com.coviam.team9.product.dto.ProductDTO;
 import com.coviam.team9.product.service.ProductService;
 import org.springframework.beans.BeanUtils;
@@ -27,12 +28,12 @@ public class ProductController {
 
 
     @PostMapping(path = "/addProduct")
-    public ResponseEntity<String> addProduct(@RequestBody ProductDTO productDTO) {
+    public ResponseEntity<AddProductDTO> addProduct(@RequestBody ProductDTO productDTO) {
         Product product = new Product();
         BeanUtils.copyProperties(productDTO, product);
-        String productCreatedId = productService.insertOrUpdate(product);
+        AddProductDTO productCreated = productService.insertOrUpdate(product);
 
-        return new ResponseEntity<String>(productCreatedId, HttpStatus.CREATED);
+        return new ResponseEntity<AddProductDTO>(productCreated, HttpStatus.CREATED);
     }
 
 

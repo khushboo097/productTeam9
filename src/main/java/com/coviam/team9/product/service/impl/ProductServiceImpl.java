@@ -1,6 +1,7 @@
 package com.coviam.team9.product.service.impl;
 
 import com.coviam.team9.product.document.Product;
+import com.coviam.team9.product.dto.AddProductDTO;
 import com.coviam.team9.product.repository.ProductRepository;
 import com.coviam.team9.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,18 @@ public class ProductServiceImpl implements ProductService {
     ProductRepository productRepository;
 
     @Override
-    public String insertOrUpdate(Product product) {
+    public AddProductDTO insertOrUpdate(Product product) {
         List<Product> productList = productRepository.findByProductNameAndDescriptionAndCategoryName(product.getProductName(), product.getDescription(), product.getCategoryName());
+        AddProductDTO addProductDTO = new AddProductDTO();
         if (productList.size() > 0) {
             System.out.println("product is already registered.... ");
-            return productList.get(0).getProductId();
+            addProductDTO.setProductId(productList.get(0).getProductId());
+            addProductDTO.setMessage("product is already registered.... ");
+            return addProductDTO;
         }
-        return productRepository.save(product).getProductId();
+        addProductDTO.setProductId(productRepository.save(product).getProductId());
+        addProductDTO.setMessage("product is registered.... ");
+        return addProductDTO;
     }
 
     @Override

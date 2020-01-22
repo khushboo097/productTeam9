@@ -24,6 +24,7 @@ public class CategoryController {
 
     @GetMapping(path = "/getAll")
     public ResponseEntity<List<Category>> getAllCategory() {
+        System.out.println("===========");
         return new ResponseEntity<List<Category>>(categoryService.getAll(), HttpStatus.OK);
     }
 

@@ -1,10 +1,7 @@
 package com.coviam.team9.product.controller;
 
 import com.coviam.team9.product.document.MerchantAndProduct;
-import com.coviam.team9.product.dto.AllProductsByCategoryNameDTO;
-import com.coviam.team9.product.dto.DecreaseMerchantProductQuantityDTO;
-import com.coviam.team9.product.dto.MerchantAndProductDTO;
-import com.coviam.team9.product.dto.ProductGetDTO;
+import com.coviam.team9.product.dto.*;
 import com.coviam.team9.product.repository.MerchantAndProductRepository;
 import com.coviam.team9.product.service.MerchantAndProductService;
 import org.springframework.beans.BeanUtils;
@@ -53,5 +50,17 @@ public class MerchantAndProductController {
     @PutMapping(path = "/decreaseQuantity")
     public ResponseEntity<Integer> decreaseMerchantProductQuantity(@Valid @RequestBody DecreaseMerchantProductQuantityDTO decreaseMerchantProductQuantityDTO) {
         return new ResponseEntity<Integer>(merchantAndProductService.changeQuantity(decreaseMerchantProductQuantityDTO), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/dashbord/{merchantId}")
+    public ResponseEntity<List<MerchantDashbordDTO>> getDashbord(@PathVariable String merchantId) {
+        List<MerchantDashbordDTO> merchantDashbordDTOS = merchantAndProductService.getDashbord(merchantId);
+        return new ResponseEntity<List<MerchantDashbordDTO>>(merchantDashbordDTOS, HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/dashbord")
+    public ResponseEntity<MessageDTO> getDashbord(@Valid @RequestBody DashbordUpdateDTO dashbordUpdateDTO) {
+
+        return new ResponseEntity<MessageDTO>(merchantAndProductService.update(dashbordUpdateDTO), HttpStatus.OK);
     }
 }

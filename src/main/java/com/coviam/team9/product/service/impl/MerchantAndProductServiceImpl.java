@@ -2,9 +2,7 @@ package com.coviam.team9.product.service.impl;
 
 import com.coviam.team9.product.document.MerchantAndProduct;
 import com.coviam.team9.product.document.Product;
-import com.coviam.team9.product.dto.AllProductsByCategoryNameDTO;
-import com.coviam.team9.product.dto.DecreaseMerchantProductQuantityDTO;
-import com.coviam.team9.product.dto.ProductGetDTO;
+import com.coviam.team9.product.dto.*;
 import com.coviam.team9.product.repository.MerchantAndProductRepository;
 import com.coviam.team9.product.repository.ProductRepository;
 import com.coviam.team9.product.service.MerchantAndProductService;
@@ -97,4 +95,50 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
         return allProductsByCategoryNameDTO;
     }
 
+    @Override
+    public List<MerchantDashbordDTO> getDashbord(String merchantId) {
+        List<MerchantAndProduct> merchantAndProducts = merchantAndProductRepository.findAllByMerchantId(merchantId);
+        ArrayList<MerchantDashbordDTO> merchantDashbordDTOArrayList = new ArrayList<MerchantDashbordDTO>();
+        for (MerchantAndProduct merchantAndProduct : merchantAndProducts) {
+            MerchantDashbordDTO merchantDashbordDTO = new MerchantDashbordDTO();
+            merchantDashbordDTO.setMerchantAndProductId(merchantAndProduct.getMerchantAndProductId());
+            merchantDashbordDTO.setQuantity(merchantAndProduct.getQuantity());
+            merchantDashbordDTO.setProductId(merchantAndProduct.getProductId());
+            merchantDashbordDTO.setSellingPrice(merchantAndProduct.getSellingPrice());
+            merchantDashbordDTO.setTotalSellingQuantity(merchantAndProduct.getTotalSellingQuantity());
+            merchantDashbordDTO.setRevenue(merchantAndProduct.getRevenue());
+            merchantDashbordDTO.setMerchantId(merchantId);
+
+
+            String productId = merchantAndProduct.getProductId();
+
+            Optional<Product> byId = productRepository.findById(productId);
+            merchantDashbordDTO.setProductName(byId.get().getProductName());
+            merchantDashbordDTO.setDescription(byId.get().getDescription());
+            merchantDashbordDTO.setAttributes(byId.get().getAttributes());
+            merchantDashbordDTO.setCategoryName(byId.get().getCategoryName());
+            merchantDashbordDTO.setProductRating(byId.get().getProductRating());
+            merchantDashbordDTO.setPrice(byId.get().getPrice());
+            merchantDashbordDTO.setUrl1(byId.get().getUrl1());
+            merchantDashbordDTO.setUrl2(byId.get().getUrl2());
+            merchantDashbordDTO.setUrl3(byId.get().getUrl3());
+            merchantDashbordDTOArrayList.add(merchantDashbordDTO);
+        }
+        return merchantDashbordDTOArrayList;
+    }
+
+    @Override
+    public MessageDTO update(DashbordUpdateDTO dashbordUpdateDTO) {
+        final Optional<MerchantAndProduct> byId = merchantAndProductRepository.findById(dashbordUpdateDTO.getMerchantAndProductId());
+
+        MessageDTO messageDTO = new MessageDTO();
+        if (byId.isPresent()) {
+
+            merchantAndProductRepository.save(byId.get());
+            messageDTO.setStatus(true);
+            return messageDTO;
+        }
+        messageDTO.setStatus(false);
+        return messageDTO;
+    }
 }
