@@ -1,5 +1,6 @@
 package com.coviam.team9.product.dto;
 
+import com.coviam.team9.product.document.Category;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -12,14 +12,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
 
+
 @Getter
 @Setter
 @ToString
 @Document
 public class MerchantAndProduct {
-
-
-
     @Id
     private String merchantAndProductId;
     private String merchantId;
@@ -28,6 +26,4 @@ public class MerchantAndProduct {
     private double sellingPrice;
     private int totalSellingQuantity;
     private double revenue;
-
-
 }
