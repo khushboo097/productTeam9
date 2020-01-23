@@ -4,13 +4,16 @@ import com.coviam.team9.product.document.MerchantAndProduct;
 import com.coviam.team9.product.dto.*;
 import com.coviam.team9.product.repository.MerchantAndProductRepository;
 import com.coviam.team9.product.service.MerchantAndProductService;
+import jdk.nashorn.internal.objects.annotations.Getter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 
 @CrossOrigin
@@ -25,9 +28,9 @@ public class MerchantAndProductController {
         return new ResponseEntity<List<AllProductsByCategoryNameDTO>>(merchantAndProductService.getProductsByCategoryNameAndMerchantRating(categoryName), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/get/{categoryName}/{productId}/{merchantAndProductId}")
-    public ResponseEntity<AllProductsByCategoryNameDTO> getProductDetails(@PathVariable String categoryName, @PathVariable String productId, @PathVariable String merchantAndProductId) {
-        return new ResponseEntity<AllProductsByCategoryNameDTO>(merchantAndProductService.getOneProduct(productId, merchantAndProductId), HttpStatus.OK);
+    @PostMapping(path = "/get/product")
+    public ResponseEntity<AllProductsByCategoryNameDTO> getProductDetails(@Valid @RequestBody ProductDisplayDTO productDisplayDTO) {
+        return new ResponseEntity<AllProductsByCategoryNameDTO>(merchantAndProductService.getOneProduct(productDisplayDTO.getProductId(), productDisplayDTO.getMerchantAndProductId()), HttpStatus.OK);
     }
 
     @PostMapping(path = "/add")
@@ -62,5 +65,11 @@ public class MerchantAndProductController {
     public ResponseEntity<MessageDTO> getDashbord(@Valid @RequestBody DashbordUpdateDTO dashbordUpdateDTO) {
 
         return new ResponseEntity<MessageDTO>(merchantAndProductService.update(dashbordUpdateDTO), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/getCartDetails/{merchantAndProductId}")
+    public ResponseEntity<AllCartDetailsDTO> getCartDetails(@PathVariable String merchantAndProductId) {
+        AllCartDetailsDTO allCartDetailsDTOS = merchantAndProductService.getCartDetailsByMerchantAndProductId(merchantAndProductId);
+        return new ResponseEntity<AllCartDetailsDTO>(allCartDetailsDTOS, HttpStatus.OK);
     }
 }

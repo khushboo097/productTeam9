@@ -11,10 +11,7 @@ import java.util.Map;
 @Setter
 @ToString
 public class MerchantDashbordDTO {
-
-
     private String merchantId;
-
     private int totalSellingQuantity;
     private double revenue;
     private String productId;

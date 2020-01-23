@@ -18,4 +18,6 @@ public interface MerchantAndProductService {
     List<MerchantDashbordDTO> getDashbord(String merchantId);
 
     MessageDTO update(DashbordUpdateDTO dashbordUpdateDTO);
+
+    AllCartDetailsDTO getCartDetailsByMerchantAndProductId(String merchantAndProductId);
 }

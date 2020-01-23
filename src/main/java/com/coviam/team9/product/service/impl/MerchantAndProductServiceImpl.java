@@ -8,8 +8,12 @@ import com.coviam.team9.product.repository.ProductRepository;
 import com.coviam.team9.product.service.MerchantAndProductService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -140,5 +144,37 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
         }
         messageDTO.setStatus(false);
         return messageDTO;
+    }
+
+    @Override
+    public AllCartDetailsDTO getCartDetailsByMerchantAndProductId(String merchantAndProductId) {
+        final Optional<MerchantAndProduct> byId = merchantAndProductRepository.findById(merchantAndProductId);
+        AllCartDetailsDTO allCartDetailsDTO = new AllCartDetailsDTO();
+        if (byId.isPresent()) {
+            String merchantId = byId.get().getMerchantId();
+
+            String merchantName = getMerchantNameById(merchantId);
+            allCartDetailsDTO.setMerchantName(merchantName);
+            allCartDetailsDTO.setSellingPrice(byId.get().getSellingPrice());
+            final String productId = byId.get().getProductId();
+            BeanUtils.copyProperties(productRepository.findById(productId).get(), allCartDetailsDTO);
+        }
+        return allCartDetailsDTO;
+    }
+
+    private static String getMerchantNameById(String merchantId) {
+
+        final String uri = "http://localhost:8083/merchant/getName/" + merchantId;
+        System.out.println("URL : " + uri);
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<String>() {
+                });
+        String merchantName = responseEntity.getBody();
+        return merchantName;
     }
 }
