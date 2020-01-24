@@ -9,7 +9,7 @@ public interface MerchantAndProductService {
 
     void save(MerchantAndProduct merchantAndProduct);
 
-    int changeQuantity(DecreaseMerchantProductQuantityDTO decreaseMerchantProductQuantityDTO);
+    void changeQuantity(DecreaseMerchantProductQuantityDTO decreaseMerchantProductQuantityDTO);
 
     List<AllProductsByCategoryNameDTO> getProductsByCategoryNameAndMerchantRating(String categoryName);
 
@@ -20,4 +20,8 @@ public interface MerchantAndProductService {
     MessageDTO update(DashbordUpdateDTO dashbordUpdateDTO);
 
     AllCartDetailsDTO getCartDetailsByMerchantAndProductId(String merchantAndProductId);
+
+    List<ProductsByAllMerchantDTO> getAllMerchantByProductId(String productId);
+
+    MerchantAndProduct getMerchant(String merchantAndProductId);
 }

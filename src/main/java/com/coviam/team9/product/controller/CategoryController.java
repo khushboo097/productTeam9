@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -23,8 +24,13 @@ public class CategoryController {
     CategoryService categoryService;
 
     @GetMapping(path = "/getAll")
-    public ResponseEntity<List<Category>> getAllCategory() {
+    public ResponseEntity<List<Category>> getAllCategory(@RequestHeader Map<String, String> headerss) {
         System.out.println("===========");
+        headerss.forEach((key, value) -> {
+            System.out.println(String.format("Header '%s' = %s", key, value));
+        });
+
+
         return new ResponseEntity<List<Category>>(categoryService.getAll(), HttpStatus.OK);
     }
 

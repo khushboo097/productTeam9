@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.validation.Valid;
 
 @CrossOrigin
@@ -24,12 +24,20 @@ public class MerchantAndProductController {
     MerchantAndProductService merchantAndProductService;
 
     @GetMapping(path = "/get/{categoryName}")
-    public ResponseEntity<List<AllProductsByCategoryNameDTO>> getAllProductsByCategoryName(@PathVariable String categoryName) {
+    public ResponseEntity<?> getAllProductsByCategoryName(@RequestHeader Map<String, String> headerss, @PathVariable String categoryName) {
+        headerss.forEach((key, value) -> {
+            System.out.println(String.format("Header '%s' = %s", key, value));
+        });
+
         return new ResponseEntity<List<AllProductsByCategoryNameDTO>>(merchantAndProductService.getProductsByCategoryNameAndMerchantRating(categoryName), HttpStatus.OK);
     }
 
     @PostMapping(path = "/get/product")
-    public ResponseEntity<AllProductsByCategoryNameDTO> getProductDetails(@Valid @RequestBody ProductDisplayDTO productDisplayDTO) {
+    public ResponseEntity<AllProductsByCategoryNameDTO> getProductDetails(@RequestHeader Map<String, String> headerss, @Valid @RequestBody ProductDisplayDTO productDisplayDTO) {
+        headerss.forEach((key, value) -> {
+            System.out.println(String.format("Header '%s' = %s", key, value));
+        });
+
         return new ResponseEntity<AllProductsByCategoryNameDTO>(merchantAndProductService.getOneProduct(productDisplayDTO.getProductId(), productDisplayDTO.getMerchantAndProductId()), HttpStatus.OK);
     }
 
@@ -50,13 +58,28 @@ public class MerchantAndProductController {
         return new ResponseEntity<MerchantAndProduct>(merchantAndProduct, HttpStatus.OK);
     }
 
-    @PutMapping(path = "/decreaseQuantity")
-    public ResponseEntity<Integer> decreaseMerchantProductQuantity(@Valid @RequestBody DecreaseMerchantProductQuantityDTO decreaseMerchantProductQuantityDTO) {
-        return new ResponseEntity<Integer>(merchantAndProductService.changeQuantity(decreaseMerchantProductQuantityDTO), HttpStatus.OK);
+    @PostMapping(path = "/decreaseQuantity")
+    public ResponseEntity<String> decreaseMerchantProductQuantity(@Valid @RequestBody List<DecreaseMerchantProductQuantityDTO> decreaseMerchantProductQuantityDTOList) {
+        System.out.println("object : " + decreaseMerchantProductQuantityDTOList.toString());
+
+        boolean status = true;
+        for (DecreaseMerchantProductQuantityDTO decreaseMerchantProductQuantityDTO : decreaseMerchantProductQuantityDTOList) {
+            try {
+                merchantAndProductService.changeQuantity(decreaseMerchantProductQuantityDTO);
+            } catch (Exception ex) {
+                status = false;
+                System.out.println("Exception in decreaseQuantity : " + ex.getMessage());
+            }
+        }
+        if (status) {
+            return new ResponseEntity("Quantity decrease...", HttpStatus.ACCEPTED);
+        }
+
+        return new ResponseEntity("Quantity not decrease...", HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping(path = "/dashbord/{merchantId}")
-    public ResponseEntity<List<MerchantDashbordDTO>> getDashbord(@PathVariable String merchantId) {
+    public ResponseEntity<List<MerchantDashbordDTO>> getDashbord(@PathVariable(name = "merchantId") String merchantId) {
         List<MerchantDashbordDTO> merchantDashbordDTOS = merchantAndProductService.getDashbord(merchantId);
         return new ResponseEntity<List<MerchantDashbordDTO>>(merchantDashbordDTOS, HttpStatus.OK);
     }
@@ -68,8 +91,25 @@ public class MerchantAndProductController {
     }
 
     @GetMapping(path = "/getCartDetails/{merchantAndProductId}")
-    public ResponseEntity<AllCartDetailsDTO> getCartDetails(@PathVariable String merchantAndProductId) {
+    public ResponseEntity<AllCartDetailsDTO> getCartDetails(@PathVariable(name = "merchantAndProductId") String merchantAndProductId) {
         AllCartDetailsDTO allCartDetailsDTOS = merchantAndProductService.getCartDetailsByMerchantAndProductId(merchantAndProductId);
         return new ResponseEntity<AllCartDetailsDTO>(allCartDetailsDTOS, HttpStatus.OK);
+    }
+
+    //TODO filter
+
+    @PostMapping(path = "/display")
+    public ResponseEntity<List<ProductsByAllMerchantDTO>> getCartDetails(@RequestBody Map<String, ?> map) {
+        List<ProductsByAllMerchantDTO> productsByAllMerchantDTOS = merchantAndProductService.getAllMerchantByProductId(map.get("productId").toString());
+        return new ResponseEntity<List<ProductsByAllMerchantDTO>>(productsByAllMerchantDTOS, HttpStatus.OK);
+    }
+
+
+    @GetMapping(path = "/get/merchant/{merchantAndProductId}")
+    public ResponseEntity<MerchantAndProductDTO> getMerchantById(@PathVariable(name = "merchantAndProductId") String merchantAndProductId) {
+        System.out.println("called!!!!!!!!!!!!!!!");
+        MerchantAndProductDTO merchantAndProductDTO = new MerchantAndProductDTO();
+        BeanUtils.copyProperties(merchantAndProductService.getMerchant(merchantAndProductId), merchantAndProductDTO);
+        return new ResponseEntity<MerchantAndProductDTO>(merchantAndProductDTO, HttpStatus.OK);
     }
 }

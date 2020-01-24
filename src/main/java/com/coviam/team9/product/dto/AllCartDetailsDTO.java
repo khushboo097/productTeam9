@@ -19,5 +19,6 @@ public class AllCartDetailsDTO {
     private String url1;
     private double price;
     private String merchantName;
+    private double merchantRating;
 
 }

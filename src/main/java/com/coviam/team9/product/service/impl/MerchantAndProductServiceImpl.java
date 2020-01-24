@@ -32,7 +32,7 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
     }
 
     @Override
-    public int changeQuantity(DecreaseMerchantProductQuantityDTO decreaseMerchantProductQuantityDTO) {
+    public void changeQuantity(DecreaseMerchantProductQuantityDTO decreaseMerchantProductQuantityDTO) {
 
         Optional<MerchantAndProduct> merchantAndProduct = merchantAndProductRepository.findById(decreaseMerchantProductQuantityDTO.getMerchantAndProductId());
 
@@ -40,10 +40,10 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
         if (merchantAndProduct != null) {
             quantity = merchantAndProduct.get().getQuantity();
             if (quantity == merchantAndProduct.get().getTotalSellingQuantity()) {
-                return -1;
+//                return -1;
             }
             if (decreaseMerchantProductQuantityDTO.getQuantity() + merchantAndProduct.get().getTotalSellingQuantity() > quantity) {
-                return (quantity - merchantAndProduct.get().getTotalSellingQuantity());
+//                return (quantity - merchantAndProduct.get().getTotalSellingQuantity());
             }
         }
         merchantAndProduct.get().setTotalSellingQuantity(merchantAndProduct.get().getTotalSellingQuantity() + decreaseMerchantProductQuantityDTO.getQuantity());
@@ -51,7 +51,8 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
         merchantAndProduct.get().setRevenue(merchantAndProduct.get().getRevenue() + revenue);
         MerchantAndProduct merchantAndProductEditedObj = merchantAndProduct.get();
         merchantAndProductRepository.save(merchantAndProductEditedObj);
-        return 0;
+        System.out.println("MerchantAndProductId : [ " + decreaseMerchantProductQuantityDTO.getMerchantAndProductId() + " ] Quantity changed...");
+//        return 0;
     }
 
     @Override
@@ -59,10 +60,9 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
 
         final List<AllProductsByCategoryNameDTO> byCategoryName = productRepository.findByCategoryName(categoryName);
 
-        //phone rating
+        //  TODO phone rating
         //phone price h,l
         List<AllProductsByCategoryNameDTO> returnAllProductsByCategoryNameDTO = new ArrayList<AllProductsByCategoryNameDTO>();
-
         for (AllProductsByCategoryNameDTO productsByCategoryNameDTO : byCategoryName) {
             productsByCategoryNameDTO.setProductId(productsByCategoryNameDTO.get_id());
             MerchantAndProduct merchantAndProduct = null;
@@ -83,19 +83,10 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
         final Optional<Product> byId = productRepository.findById(productId);
         Optional<MerchantAndProduct> obj = merchantAndProductRepository.findById(merchantAndProductId);
         AllProductsByCategoryNameDTO allProductsByCategoryNameDTO = new AllProductsByCategoryNameDTO();
-        allProductsByCategoryNameDTO.setProductId(byId.get().getProductId());
-        allProductsByCategoryNameDTO.setMerchantId(obj.get().getMerchantId());
-        allProductsByCategoryNameDTO.setProductName(byId.get().getProductName());
-        allProductsByCategoryNameDTO.set_id(byId.get().getProductId());
-        allProductsByCategoryNameDTO.setDescription(byId.get().getDescription());
-        allProductsByCategoryNameDTO.setProductRating(byId.get().getProductRating());
-        allProductsByCategoryNameDTO.setCategoryName(byId.get().getCategoryName());
-        allProductsByCategoryNameDTO.setPrice(byId.get().getPrice());
-        allProductsByCategoryNameDTO.setUrl1(byId.get().getUrl1());
-        allProductsByCategoryNameDTO.setUrl2(byId.get().getUrl3());
-        allProductsByCategoryNameDTO.setUrl3(byId.get().getUrl2());
-        allProductsByCategoryNameDTO.setMerchantAndProductId(merchantAndProductId);
-        allProductsByCategoryNameDTO.setSellingPrice(obj.get().getSellingPrice());
+        BeanUtils.copyProperties(byId.get(), allProductsByCategoryNameDTO);
+        MerchantDTO merchantDTO = getMerchantNameById(obj.get().getMerchantId());
+        BeanUtils.copyProperties(merchantDTO, allProductsByCategoryNameDTO);
+        BeanUtils.copyProperties(obj.get(), allProductsByCategoryNameDTO);
         return allProductsByCategoryNameDTO;
     }
 
@@ -153,8 +144,9 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
         if (byId.isPresent()) {
             String merchantId = byId.get().getMerchantId();
 
-            String merchantName = getMerchantNameById(merchantId);
-            allCartDetailsDTO.setMerchantName(merchantName);
+            MerchantDTO merchantDTO = getMerchantNameById(merchantId);
+            allCartDetailsDTO.setMerchantName(merchantDTO.getMerchantName());
+            allCartDetailsDTO.setMerchantRating(merchantDTO.getMerchantRating());
             allCartDetailsDTO.setSellingPrice(byId.get().getSellingPrice());
             final String productId = byId.get().getProductId();
             BeanUtils.copyProperties(productRepository.findById(productId).get(), allCartDetailsDTO);
@@ -162,19 +154,46 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
         return allCartDetailsDTO;
     }
 
-    private static String getMerchantNameById(String merchantId) {
+    @Override
+    public List<ProductsByAllMerchantDTO> getAllMerchantByProductId(String productId) {
+        List<MerchantAndProduct> merchantAndProducts = merchantAndProductRepository.findAllByProductId(productId);
+
+        ArrayList<ProductsByAllMerchantDTO> productsByAllMerchantDTOSList = new ArrayList<ProductsByAllMerchantDTO>();
+
+        for (MerchantAndProduct merchantAndProduct : merchantAndProducts) {
+
+            ProductsByAllMerchantDTO obj = new ProductsByAllMerchantDTO();
+            BeanUtils.copyProperties(merchantAndProduct, obj);
+            MerchantDTO merchantDTO = getMerchantNameById(merchantAndProduct.getMerchantId());
+            BeanUtils.copyProperties(merchantDTO, obj);
+            productsByAllMerchantDTOSList.add(obj);
+        }
+        for (ProductsByAllMerchantDTO obj : productsByAllMerchantDTOSList) {
+
+            System.out.println(obj.toString());
+        }
+        return productsByAllMerchantDTOSList;
+
+    }
+
+    @Override
+    public MerchantAndProduct getMerchant(String merchantAndProductId) {
+        return merchantAndProductRepository.findById(merchantAndProductId).get();
+    }
+
+    private static MerchantDTO getMerchantNameById(String merchantId) {
 
         final String uri = "http://localhost:8083/merchant/getName/" + merchantId;
         System.out.println("URL : " + uri);
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<String> responseEntity = restTemplate.exchange(
+        ResponseEntity<MerchantDTO> responseEntity = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<String>() {
+                new ParameterizedTypeReference<MerchantDTO>() {
                 });
-        String merchantName = responseEntity.getBody();
-        return merchantName;
+
+        return responseEntity.getBody();
     }
 }

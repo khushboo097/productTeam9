@@ -23,4 +23,8 @@ public class AllProductsByCategoryNameDTO {
     private String url1;
     private String url2;
     private String url3;
+    private int quantity;
+    private String merchantName;
+    private double merchantRating;
+
 }
