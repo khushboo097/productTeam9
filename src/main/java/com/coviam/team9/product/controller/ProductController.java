@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -23,17 +23,26 @@ public class ProductController {
 
     @GetMapping(path = "/get")
     public ResponseEntity<List<Product>> getAllProducts() {
+        System.out.println("=====");
         return new ResponseEntity<List<Product>>(productService.getAllProducts(), HttpStatus.OK);
     }
 
 
     @PostMapping(path = "/addProduct")
     public ResponseEntity<AddProductDTO> addProduct(@RequestBody ProductDTO productDTO) {
+
+        System.out.println("addProduct");
         Product product = new Product();
         BeanUtils.copyProperties(productDTO, product);
         AddProductDTO productCreated = productService.insertOrUpdate(product);
 
         return new ResponseEntity<AddProductDTO>(productCreated, HttpStatus.CREATED);
+    }
+
+    @GetMapping(path = "/getone/{productId}")
+    public ResponseEntity<?> getOneProduct(@PathVariable(name = "productId") String productId) {
+        System.out.println("getOne Called..." + productId);
+        return new ResponseEntity<>(productService.getOne(productId), HttpStatus.OK);
     }
 
 

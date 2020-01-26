@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import javax.validation.Valid;
 
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/merchantAndProduct")
 public class MerchantAndProductController {
@@ -25,11 +25,20 @@ public class MerchantAndProductController {
 
     @GetMapping(path = "/get/{categoryName}")
     public ResponseEntity<?> getAllProductsByCategoryName(@RequestHeader Map<String, String> headerss, @PathVariable String categoryName) {
+
+
+        System.out.println("==>" + categoryName);
         headerss.forEach((key, value) -> {
             System.out.println(String.format("Header '%s' = %s", key, value));
         });
 
         return new ResponseEntity<List<AllProductsByCategoryNameDTO>>(merchantAndProductService.getProductsByCategoryNameAndMerchantRating(categoryName), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/getDetails/{merchantAndProductId}")
+    public ResponseEntity<?> getDetails(@PathVariable String merchantAndProductId) {
+        MerchantAndProduct merchantAndProduct = merchantAndProductService.getDetails(merchantAndProductId);
+        return new ResponseEntity<>(merchantAndProduct, HttpStatus.OK);
     }
 
     @PostMapping(path = "/get/product")
@@ -80,9 +89,11 @@ public class MerchantAndProductController {
 
     @GetMapping(path = "/dashbord/{merchantId}")
     public ResponseEntity<List<MerchantDashbordDTO>> getDashbord(@PathVariable(name = "merchantId") String merchantId) {
+        System.out.println("================dashbord===========>" + merchantId);
         List<MerchantDashbordDTO> merchantDashbordDTOS = merchantAndProductService.getDashbord(merchantId);
         return new ResponseEntity<List<MerchantDashbordDTO>>(merchantDashbordDTOS, HttpStatus.OK);
     }
+
 
     @PutMapping(path = "/dashbord")
     public ResponseEntity<MessageDTO> getDashbord(@Valid @RequestBody DashbordUpdateDTO dashbordUpdateDTO) {

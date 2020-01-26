@@ -181,6 +181,11 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
         return merchantAndProductRepository.findById(merchantAndProductId).get();
     }
 
+    @Override
+    public MerchantAndProduct getDetails(String merchantAndProductId) {
+        return merchantAndProductRepository.findById(merchantAndProductId).get();
+    }
+
     private static MerchantDTO getMerchantNameById(String merchantId) {
 
         final String uri = "http://localhost:8083/merchant/getName/" + merchantId;

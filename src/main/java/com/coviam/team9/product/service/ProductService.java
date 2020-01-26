@@ -11,4 +11,6 @@ public interface ProductService {
     public AddProductDTO insertOrUpdate(Product product);
 
     List<Product> getAllProducts();
+
+    Product getOne(String productId);
 }

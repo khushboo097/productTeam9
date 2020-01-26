@@ -12,12 +12,12 @@ public class ProductDTO {
 
     private String productId;
     private String productName;
-    private Map<String, String> attributes;
-    private String categoryName;
     private double productRating;
     private double price;
     private String description;
     private String url1;
     private String url2;
     private String url3;
+    private String categoryName;
+    private Map<String, String> attributes;
 }

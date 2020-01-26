@@ -18,12 +18,12 @@ public class Product {
     public static final String COLLECTION_NAME = "product";
     @Id
     private String productId;
+    private Map<String, String> attributes;
     private String productName;
     private String description;
-    private Map<String, String> attributes;
+    private double price;
     private String categoryName;
     private double productRating;
-    private double price;
     private String url1;
     private String url2;
     private String url3;
