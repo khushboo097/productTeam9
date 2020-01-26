@@ -127,8 +127,8 @@ public class MerchantAndProductController {
     ///Phani
 
     @PostMapping("/getDetailsFromProductId")
-    public ResponseEntity<List<AllProductsByCategoryNameDTO>> getDetailsFromProductId(@RequestBody ProductIdDto productIdDto){
-        return new ResponseEntity<List<AllProductsByCategoryNameDTO>>(merchantAndProductService.getDetailsFromProductId(productIdDto), HttpStatus.OK);
+    public ResponseEntity<AllProductsByCategoryNameDTO> getDetailsFromProductId(@RequestBody ProductIdDto productIdDto){
+        return new ResponseEntity<AllProductsByCategoryNameDTO>(merchantAndProductService.getDetailsFromProductId(productIdDto).get(0), HttpStatus.OK);
     }
 
 }
