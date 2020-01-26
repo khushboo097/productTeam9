@@ -15,4 +15,5 @@ public interface MerchantAndProductRepository extends MongoRepository<MerchantAn
     List<MerchantAndProduct> findAllByMerchantId(String merchantId);
 
     List<MerchantAndProduct> findAllByProductId(String productId);
+
 }

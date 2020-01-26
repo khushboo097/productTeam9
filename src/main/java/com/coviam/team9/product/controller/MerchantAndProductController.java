@@ -123,4 +123,12 @@ public class MerchantAndProductController {
         BeanUtils.copyProperties(merchantAndProductService.getMerchant(merchantAndProductId), merchantAndProductDTO);
         return new ResponseEntity<MerchantAndProductDTO>(merchantAndProductDTO, HttpStatus.OK);
     }
+
+    ///Phani
+
+    @PostMapping("/getDetailsFromProductId")
+    public ResponseEntity<List<AllProductsByCategoryNameDTO>> getDetailsFromProductId(@RequestBody ProductIdDto productIdDto){
+        return new ResponseEntity<List<AllProductsByCategoryNameDTO>>(merchantAndProductService.getDetailsFromProductId(productIdDto), HttpStatus.OK);
+    }
+
 }

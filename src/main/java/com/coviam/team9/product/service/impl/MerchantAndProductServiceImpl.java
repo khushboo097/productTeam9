@@ -201,4 +201,33 @@ public class MerchantAndProductServiceImpl implements MerchantAndProductService 
 
         return responseEntity.getBody();
     }
+
+
+    @Override
+    public List<AllProductsByCategoryNameDTO> getDetailsFromProductId(ProductIdDto productIdDto) {
+        List<AllProductsByCategoryNameDTO> returnAllProductsByCategoryNameDTO = new ArrayList<AllProductsByCategoryNameDTO>();
+        List<AllProductsByCategoryNameDTO> byCategoryName = productRepository.findByCategoryNameOrderByProductRating(productIdDto.getCategoryName());
+        for (AllProductsByCategoryNameDTO productsByCategoryNameDTO : byCategoryName) {
+            productsByCategoryNameDTO.setProductId(productsByCategoryNameDTO.get_id());
+//            MerchantAndProduct merchantAndProduct = null;
+            List<MerchantAndProduct> all = merchantAndProductRepository.findByProductIdOrderBySellingPrice(productIdDto.getProductId());
+            System.out.println(productsByCategoryNameDTO.get_id() + "==>" + all.toString());
+            if (!CollectionUtils.isEmpty(all)) {
+                for (MerchantAndProduct merchantAndProduct1 : all) {
+                    System.out.println("***>" + merchantAndProduct1);
+//                    merchantAndProduct = merchantAndProduct1;
+                    productsByCategoryNameDTO.setMerchantAndProductId(merchantAndProduct1.getMerchantAndProductId());
+                    productsByCategoryNameDTO.setMerchantId(merchantAndProduct1.getMerchantId());
+                    productsByCategoryNameDTO.setSellingPrice(merchantAndProduct1.getSellingPrice());
+                    AllProductsByCategoryNameDTO obj = new AllProductsByCategoryNameDTO();
+                    BeanUtils.copyProperties(productsByCategoryNameDTO, obj);
+                    returnAllProductsByCategoryNameDTO.add(obj);
+                    break;
+                }
+            }
+        }
+        return returnAllProductsByCategoryNameDTO;
+
+
+    }
 }

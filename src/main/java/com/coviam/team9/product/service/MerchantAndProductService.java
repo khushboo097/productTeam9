@@ -26,4 +26,6 @@ public interface MerchantAndProductService {
     MerchantAndProduct getMerchant(String merchantAndProductId);
 
     MerchantAndProduct getDetails(String merchantAndProductId);
+
+    public List<AllProductsByCategoryNameDTO> getDetailsFromProductId(ProductIdDto productIdDto);
 }
